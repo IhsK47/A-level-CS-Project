@@ -10,6 +10,7 @@ colo
 
 in middle of sprite
 
+test update
 '''
 
 import pygame
@@ -61,5 +62,9 @@ class sprite():
 pygame.font.init()
 
 font = pygame.font("arial") #defining fonts
+
+
+
+
 
 
