@@ -9,9 +9,10 @@ surface object instantion: thing = pygame.Surface( (w,h) )    parameters of a tu
 colo
 
 in middle of sprite
+https://www.youtube.com/watch?v=2iyx8_elcYg&list=PLWgEGaPlUGPdaoAuY1Iv1xQrqYLWrmTHZ&index=4&t=340s&ab_channel=CodingWithRuss
 
-test update
 '''
+#hint: save changes locally before saving to github ;)
 
 import pygame
 import sys 
@@ -24,13 +25,14 @@ screen_size = (screen_width,screen_height)
 #this is the screen size which is set to be HD resolution
 
 
+#defining fonts
 
 screen = pygame.display.set_caption('My very cool game') #giving the window a name
 screen = pygame.display.set_mode(screen_size) #initialise the display module/object
 
 clock = pygame.time.Clock() #intantiating the clock object
 
-sky_surface = pygame.image.load('//CFBS-SVR-FILE1/PupilsData/2017/Kabirm/Documents/A-Level Programming Project/sunsetPixel.png').convert_alpha() #importing the image
+sky_surface = pygame.image.load('//CFBS-SVR-FILE1/PupilsData/2017/Kabirm/Documents/A-Level Programming Project/graphics/sunsetPixel.png').convert_alpha() #importing the image
 sky_surface = pygame.transform.scale(sky_surface, (screen_size)) #resizing to screen size
 
 
@@ -57,6 +59,10 @@ while running: #this while loop allows a game loop to run
 class sprite():
     ''
 
+class button ():
+  def __init__(self, given_text):
+    #contruter method
+    self.text = given_text
 
 
 pygame.font.init()
