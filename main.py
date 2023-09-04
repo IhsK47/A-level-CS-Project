@@ -1,7 +1,6 @@
 '''
 pygame.draw.circle(screen,(255,00,00), ( int(700) , int(700) ) , 10) general test circle
 
-
 blit: block image transfer, blit one image onto another
 screen.blit (surface name, position)
 
@@ -10,6 +9,9 @@ colo
 
 in middle of sprite
 https://www.youtube.com/watch?v=2iyx8_elcYg&list=PLWgEGaPlUGPdaoAuY1Iv1xQrqYLWrmTHZ&index=4&t=340s&ab_channel=CodingWithRuss
+
+
+LL: work directory issue -----------------------
 
 '''
 #hint: save changes locally before saving to github ;)
@@ -32,6 +34,7 @@ screen = pygame.display.set_mode(screen_size) #initialise the display module/obj
 
 clock = pygame.time.Clock() #intantiating the clock object
 
+#loading background
 sky_surface = pygame.image.load('//CFBS-SVR-FILE1/PupilsData/2017/Kabirm/Documents/A-Level Programming Project/graphics/sunsetPixel.png').convert_alpha() #importing the image
 sky_surface = pygame.transform.scale(sky_surface, (screen_size)) #resizing to screen size
 
@@ -42,6 +45,7 @@ overlay.set_alpha (120) #setting alpha for transparency
 
 running = True
 while running: #this while loop allows a game loop to run
+    
     for event in pygame.event.get(): 
         if event.type == pygame.QUIT: #game quit
             pygame.quit()
@@ -58,6 +62,8 @@ while running: #this while loop allows a game loop to run
 
 class sprite():
     ''
+
+
 
 class button ():
   def __init__(self, given_text):
