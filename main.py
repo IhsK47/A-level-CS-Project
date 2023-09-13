@@ -21,7 +21,9 @@ LL: work directory issue -----------------------
 import pygame
 import sys 
 
+
 pygame.init()
+pygame.font.init()
 
 screen_width = 1280
 screen_height = 720
@@ -41,8 +43,23 @@ darkGrey = (140,140,140)
 #defining colours
 
 
-#font = pygame.font.SysFont ()
+calibri = pygame.font.SysFont ('Calibri',40)
 #defining fonts
+
+
+screen = pygame.display.set_caption('My very cool game') #giving the window a name
+screen = pygame.display.set_mode(screen_size) #initialise the display module/object
+
+clock = pygame.time.Clock() #intantiating the clock object
+
+#loading background
+sky_surface = pygame.image.load('graphics\sunsetPixel.png').convert_alpha() #importing the image
+sky_surface = pygame.transform.scale(sky_surface, (screen_size)) #resizing to screen size
+
+
+overlay = pygame.Surface(screen_size) #instantiating an overlay to soften image for main menu
+overlay.fill((192,192,192)) #grey rgb
+overlay.set_alpha (120) #setting alpha for transparency
 
 
 class sprite():
@@ -69,24 +86,45 @@ class Button (): #defining the button class
         # Check if a given point (pos) is inside the button's rectangle
         return self.rect.collidepoint(pos)
 
-screen = pygame.display.set_caption('My very cool game') #giving the window a name
-screen = pygame.display.set_mode(screen_size) #initialise the display module/object
+class Text ():
+    ''
 
-clock = pygame.time.Clock() #intantiating the clock object
+def playButtonScreen():
 
-#loading background
-sky_surface = pygame.image.load('//CFBS-SVR-FILE1/PupilsData/2017/Kabirm/Documents/A-Level Programming Project/graphics/sunsetPixel.png').convert_alpha() #importing the image
-sky_surface = pygame.transform.scale(sky_surface, (screen_size)) #resizing to screen size
+    pygame.display.set_caption('The Very Cool Game')
+    screen.blit(sky_surface, (0,0) )
+    screen.blit(overlay, (0,0) )
+
+    testbutton = Button ("test text",400,400)
 
 
-overlay = pygame.Surface(screen_size) #instantiating an overlay to soften image for main menu
-overlay.fill((192,192,192)) #grey rgb
-overlay.set_alpha (120) #setting alpha for transparency
 
-play = Button ("Play", 540, 100)
-stats = Button ("stats", 540, 250)
-settings = Button ("settings", 540, 400)
-quit = Button ("Quit", 540, 550)
+def settingsScreen ():
+
+    pygame.display.set_caption('Settings Menu')
+
+def createFont (font,size):
+    newFont = pygame.font.sysFont(font,size)
+    return newFont
+
+def mainMenu ():
+    
+    pygame.display.set_caption('Main Menu')
+    screen.blit(sky_surface, (0,0) )
+    screen.blit(overlay, (0,0) )
+
+    #main menu buttons
+    playButton.draw(screen)  # Draw the button on the screen
+    statsButton.draw(screen)
+    settingsButton.draw(screen)
+    quitButton.draw(screen)
+
+
+playButton = Button ("Play", 540, 100) #instantiation of the button
+statsButton = Button ("Stats", 540, 250)
+settingsButton = Button ("Settings", 540, 400)
+quitButton = Button ("Quit", 540, 550)
+
 
 
 running = True
@@ -100,27 +138,21 @@ while running: #this while loop allows a game loop to run
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             # Check if the left mouse button was clicked
             pos = pygame.mouse.get_pos()
-            if quit.is_clicked(pos):
+            if playButton.is_clicked(pos):
+                playButtonScreen ()
+            if quitButton.is_clicked(pos):
                 running = False
+
+            elif settingsButton.is_clicked(pos):
+                settingsScreen ()
 
     screen.blit(sky_surface, (0,0) )
     screen.blit(overlay, (0,0) )
 
-    #main menu buttons
-    play.draw(screen)  # Draw the button on the screen
-    stats.draw(screen)
-    settings.draw(screen)
-    quit.draw(screen)
-
+    mainMenu() #run main menu
 
     pygame.display.update()
     clock.tick(90) #max 90 fps to make sure program doesnt overdo 
-
-
-
-pygame.font.init()
-
-font = pygame.font("arial") #defining fonts
 
 
 
