@@ -89,6 +89,10 @@ class Button (): #defining the button class
 class Text ():
     ''
 
+
+def main ():
+    mainMenu()
+
 def playButtonScreen():
 
     pygame.display.set_caption('The Very Cool Game')
@@ -149,7 +153,7 @@ while running: #this while loop allows a game loop to run
     screen.blit(sky_surface, (0,0) )
     screen.blit(overlay, (0,0) )
 
-    mainMenu() #run main menu
+    main()
 
     pygame.display.update()
     clock.tick(90) #max 90 fps to make sure program doesnt overdo 
