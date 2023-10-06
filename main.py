@@ -18,17 +18,17 @@ LL: work directory issue -----------------------
 '''
 #hint: save changes locally before saving to github ;)
 
+
+#what are we up to: loop is working, prints are functioning but the actual pygame stuff wont happen, #
+## but if i run playscren it works outside loop
+
 import pygame
 import sys 
-
+import time
 
 pygame.init()
 pygame.font.init()
 
-screen_width = 1280
-screen_height = 720
-screen_size = (screen_width,screen_height)
-#this is the screen size which is set to be HD resolution
 
 white = (255,255,255)
 black = (0,0,0)
@@ -46,6 +46,10 @@ darkGrey = (140,140,140)
 calibri = pygame.font.SysFont ('Calibri',40)
 #defining fonts
 
+screen_width = 1280
+screen_height = 720
+screen_size = (screen_width,screen_height)
+#this is the screen size which is set to be HD resolution
 
 screen = pygame.display.set_caption('My very cool game') #giving the window a name
 screen = pygame.display.set_mode(screen_size) #initialise the display module/object
@@ -62,11 +66,17 @@ overlay.fill((192,192,192)) #grey rgb
 overlay.set_alpha (120) #setting alpha for transparency
 
 
+game_state = 'mainMenu'
+
+
+
+
+
 class sprite():
     ''
 
 
-class Button (): #defining the button class  
+class Button(): #defining the button class  
     #contruter method
     def __init__(self, text, x, y):
         self.rect = pygame.Rect(x, y, 200, 100)
@@ -84,80 +94,119 @@ class Button (): #defining the button class
 
     def is_clicked(self, pos):
         # Check if a given point (pos) is inside the button's rectangle
-        return self.rect.collidepoint(pos)
-
-class Text ():
-    ''
+        if self.rect.collidepoint(pos) and pygame.mouse.get_pressed()[0]:
+            return True
+        
+        #return self.rect.collidepoint(pos)
 
 
 def main ():
+
+    for event in pygame.event.get(): 
+        if event.type == pygame.QUIT:
+            running = False
+    
     mainMenu()
+    pygame.display.flip()
+
+
+def mainMenu ():
+    global __display__ 
+
+    pygame.display.set_caption('Main Menu')
+    screen.blit(sky_surface, (0,0) )
+    screen.blit(overlay, (0,0) )
+    print ('menu')
+    #main menu buttons
+    
+    
+    playButton.draw(screen)  # Draw the button on the screen
+    statsButton.draw(screen)
+    settingsButton.draw(screen)
+    quitButton.draw(screen)
+
+    for event in pygame.event.get(): 
+
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            # Check if the left mouse button was clicked
+ #           next 
+            if playButton.is_clicked(pos):
+                play()
+                #playButtonScreen ()
+            if quitButton.is_clicked(pos):
+                return False
+            elif settingsButton.is_clicked(pos):
+                settingsScreen ()
+
 
 def playButtonScreen():
 
+    
     pygame.display.set_caption('The Very Cool Game')
     screen.blit(sky_surface, (0,0) )
-    screen.blit(overlay, (0,0) )
-
+    print ('play')
     testbutton = Button ("test text",400,400)
+    testbutton.draw(screen)
+    pygame.display.update()
 
 
 
 def settingsScreen ():
 
     pygame.display.set_caption('Settings Menu')
+    print ('settings')
+
+
 
 def createFont (font,size):
     newFont = pygame.font.sysFont(font,size)
     return newFont
 
-def mainMenu ():
-    
-    pygame.display.set_caption('Main Menu')
-    screen.blit(sky_surface, (0,0) )
-    screen.blit(overlay, (0,0) )
-
-    #main menu buttons
-    playButton.draw(screen)  # Draw the button on the screen
-    statsButton.draw(screen)
-    settingsButton.draw(screen)
-    quitButton.draw(screen)
+def draw_text(text, font, col, x, y): #function to draw text and then blit it
+  txt = font.render(text, True, col)
+  screen.blit(txt, (x, y))
 
 
-playButton = Button ("Play", 540, 100) #instantiation of the button
+
+
+playButton = Button("Play", 540, 100) #instantiation of the button
 statsButton = Button ("Stats", 540, 250)
 settingsButton = Button ("Settings", 540, 400)
 quitButton = Button ("Quit", 540, 550)
 
-
-
+main()
 running = True
 while running: #this while loop allows a game loop to run
-    
+
+
+    pos = pygame.mouse.get_pos()
+
     for event in pygame.event.get(): 
-        if event.type == pygame.QUIT: #game quit
+        if event.type == pygame.QUIT:
+            running = False
+        if quitButton.is_clicked(pos): #'''(event.type == pygame.QUIT) or'''  #game quit
+            print ('quit1')
             pygame.quit()
             sys.exit()
             running = False
+            exit()
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             # Check if the left mouse button was clicked
-            pos = pygame.mouse.get_pos()
+            #pos = pygame.mouse.get_pos()
             if playButton.is_clicked(pos):
                 playButtonScreen ()
             if quitButton.is_clicked(pos):
-                running = False
+                print('quit2')
+                running = False                
 
             elif settingsButton.is_clicked(pos):
                 settingsScreen ()
 
-    screen.blit(sky_surface, (0,0) )
-    screen.blit(overlay, (0,0) )
+    #screen.blit(sky_surface, (0,0) )
+    #screen.blit(overlay, (0,0) )
 
-    main()
-
-    pygame.display.update()
+    pygame.display.flip()
     clock.tick(90) #max 90 fps to make sure program doesnt overdo 
-
 
 
 
