@@ -68,10 +68,11 @@ def overlay ():
 def main ():
 
 
-
     for event in pygame.event.get(): 
         if event.type == pygame.QUIT:
             running = False
     
-    mainMenu()
+    if __display__ == 'menu':
+        mainMenu()
 
+main()
