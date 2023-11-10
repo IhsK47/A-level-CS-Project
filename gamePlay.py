@@ -39,9 +39,12 @@ class Castle ():
         width = castleSprite.get_width () 
         height = castleSprite.get_height ()
 
+        self.image = pygame.transform.scale(image, (int(width*scale)) , (height*scale) ) #to ensure image is a correct size
+        self.rect = self.castleSprite.get_rect()
+        self.rect.x, self.rect.y = x, y #x&y co-odinates for the rect
 
 
-    def setHealth (self, health): #set health via upgrades
+    def setHealth (self, health): #set health via castle upgrades
         self.health = health
 
 
@@ -49,6 +52,8 @@ class Castle ():
 
 running = True
 while running: #this while loop allows a game loop to run
+
+    background()
 
     pos = pygame.mouse.get_pos()
     pygame.display.update()
