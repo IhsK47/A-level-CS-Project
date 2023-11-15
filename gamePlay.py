@@ -29,7 +29,7 @@ def overlay ():
 
 #load images
 castleSprite = pygame.image.load('graphics\castle 3d.png').convert_alpha() #castle
-barrieSprite = pygame.image.load('grahics\barrieStickman.png').convert_alpha() #main character
+barrieSprite = pygame.image.load('graphics\BarrieStickman.png').convert_alpha() #main character
 
 
 
@@ -95,8 +95,8 @@ class Soldiers (pygame.sprite.Sprite):
         self.soldier_type = soldier_type
         self.soldier_team = soldier_team
 
-        self.side = side
-        self.vertical = vertical
+        self.side = side #left/right
+        self.vertical = vertical # y pos
         
         self.walkingAnimationLength = walk_frames
         self.attackingAnimationLength = attack_frames
@@ -110,7 +110,8 @@ class Soldiers (pygame.sprite.Sprite):
         self.current_frame = 0 #current frame for animation
         #self.load_animations()
 
-
+    def load_animations ():
+        pass #to be completed later
 
 
 # create castle (castleSprite,x,y, scale)
