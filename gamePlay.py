@@ -87,10 +87,29 @@ class Barrie (): #the main character of my game is called barrie
         screen.blit (self.image, self.rect) #co ordinated defined already for x & y hence self.rect can be passed in
 
 
-class Soilders (pygame.sprite.Sprite):
+class Soldiers (pygame.sprite.Sprite):
 
-    def __init__ (self, x, y, unit_type, soilder_team, side, vetical, walk_frames, attack_frames, health, attack, defence, speed): 
-        pass
+    def __init__ (self, x, y, soldier_type, soldier_team, side, vetical, walk_frames, attack_frames, health, attack, defence, speed): 
+        pygame.sprite.Sprite.__init__ (self)
+
+        self.soldier_type = soldier_type
+        self.soldier_team = soldier_team
+
+        self.side = side
+        self.vertical = vertical
+        
+        self.walkingAnimationLength = walk_frames
+        self.attackingAnimationLength = attack_frames
+
+        self.health = health
+        self.attack = attack
+        self.defence = defence
+        self.speed = speed
+
+        self.last_update = 0 #when amimation was last updated
+        self.current_frame = 0 #current frame for animation
+        #self.load_animations()
+
 
 
 
