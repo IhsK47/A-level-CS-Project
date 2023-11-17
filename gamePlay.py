@@ -13,19 +13,27 @@ clock = pygame.time.Clock() #intantiating the clock object
 player_team = 'teamBarie'
 enemies_team = 'Opps'
 
+white = (255,255,255)
 
-def background(): 
+class Background ():
+
+    def __init__ (self):
+        pass
+
+    def draw(self): 
     #loading background
-    sky_surface = pygame.image.load('graphics\sunsetPixel.png').convert_alpha() #importing the image
-    sky_surface = pygame.transform.scale(sky_surface, (screen_size)) #resizing to screen size
-    screen.blit(sky_surface, (0,0) ) # 0,0 starts at bottom right 
+        sky_surface = pygame.image.load('graphics\sunsetPixel.png').convert_alpha() #importing the image
+        sky_surface = pygame.transform.scale(sky_surface, (screen_size)) #resizing to screen size
+        screen.blit(sky_surface, (0,0) ) # 0,0 starts at bottom right 
 
-def overlay ():
-    overlay = pygame.Surface(screen_size) #instantiating an overlay to soften image for main menu
-    overlay.fill((192,192,192)) #grey rgb
-    overlay.set_alpha (120) #setting alpha for transparency
-    screen.blit(overlay, (0,0) )
+    def overlay (self):
+        overlay = pygame.Surface(screen_size) #instantiating an overlay to soften image for main menu
+        overlay.fill((192,192,192)) #grey rgb
+        overlay.set_alpha (120) #setting alpha for transparency
+        screen.blit(overlay, (0,0) )
 
+#create background object
+background = Background ()
 
 #load images
 castleSprite = pygame.image.load('graphics\castle 3d.png').convert_alpha() #castle
@@ -44,7 +52,7 @@ class Castle ():
         height = int(castleSprite.get_height ()  * scale)
         print ('castle w.h:', width, height)
 
-        self.castleSprite = pygame.transform.scale(castleSprite, (height, width) ) #to ensure image is a correct size
+        self.castleSprite = pygame.transform.scale(castleSprite, (width,height ) ) #to ensure image is a correct size
         self.rect = self.castleSprite.get_rect()
         self.rect.x, self.rect.y = x, y #x&y co-odinates for the rect
 
@@ -62,24 +70,36 @@ class Barrie (): #the main character of my game is called barrie
     def __init__ (self,barrieSprite,x, y, scale):
         self.health = 200
         self.max_health = self.health
-        self.move_speed = 5
+        self.speed = 20
 
         width = int(barrieSprite.get_width () * scale)
         height = int(barrieSprite.get_height ()  * scale)
         print ('barrie w.h:', width, height)
 
-        self.barrieSprite = pygame.transform.scale(barrieSprite, (height, width) ) #to ensure image is a correct size
+        self.barrieSprite = pygame.transform.scale(barrieSprite, (width, height) ) #to ensure image is a correct size
         self.rect = self.barrieSprite.get_rect()
         self.rect.x, self.rect.y = x, y #x&y co-odinates for the rect
 
-    def movement (self):
-        pass #to be completed later
+        '''
+        self.shootRange = rect ()
+        '''
+
+
+    def move (self):
+        # if pos < screen width: #barriers
+#        self.rect.move_ip(0,speed)
+
+        for event in pygame.event.get():
+            key = pygame.key.get_pressed()
+            if key[pygame.K_a] == True:
+                self.rect.move_ip(-self.speed, 0)
+            if key[pygame.K_d] == True:
+                self.rect.move_ip(self.speed, 0)
+        pygame.display.flip()
+
 
     def setHealth (self, health): #set health via castle upgrades
         self.health = health
-
-    def shoot(self):
-        pass # to be completed later
 
 
     def draw (self):
@@ -87,7 +107,22 @@ class Barrie (): #the main character of my game is called barrie
         screen.blit (self.image, self.rect) #co ordinated defined already for x & y hence self.rect can be passed in
 
 
-class Soldiers (pygame.sprite.Sprite):
+    def shoot(self): #created bullets using bullets class
+        
+        '''
+        if within shoot range, then
+                instantaite new bullet going at whatever speed
+                add to bullet sprite group
+                
+                
+        '''
+        pos = pygame.mouse.get_pos()
+        pygame.draw.line (screen, white, (self.rect.right[0],int((self.rect.bottom[1])/3) ), (pos) )
+        
+
+
+
+class Soldiers (pygame.sprite.Sprite): 
 
     def __init__ (self, x, y, soldier_type, soldier_team, side, vetical, walk_frames, attack_frames, health, attack, defence, speed): 
         pygame.sprite.Sprite.__init__ (self)
@@ -105,28 +140,45 @@ class Soldiers (pygame.sprite.Sprite):
         self.attack = attack
         self.defence = defence
         self.speed = speed
+        self.alive = True
 
         self.last_update = 0 #when amimation was last updated
-        self.current_frame = 0 #current frame for animation
-        #self.load_animations()
+        self.current_frame = 0 #current frame for animation, starts at zero to be on the first frame
+        self.load_animations()
+
+
 
     def load_animations ():
         pass #to be completed later
+    ''' #this code below ensures that the first frame is the first frame of walking with is in animation list as zero,zero 
+    self.animation_list = animation_list 
+    self.action = 0
+    self.frame_index = 0
+    self.image = self.animation_list [self.action][self.frame_index]
+    '''
 
 
 # create castle (castleSprite,x,y, scale)
 castle = Castle (castleSprite,0, 380 ,0.7 ) 
-
+#create main character 
+barrie = Barrie (barrieSprite, 250, 450, 0.3)
 
 running = True
+
+background.draw ()
+
 while running: #this while loop allows a game loop to run
 
-    background()
+    background.draw()
     castle.draw ()
+    barrie.draw ()
+    barrie.move()
+
 
     pos = pygame.mouse.get_pos()
     pygame.display.update()
     for event in pygame.event.get(): 
+        print (event)
         if event.type == pygame.QUIT:
             running = False
 
