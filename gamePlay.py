@@ -1,10 +1,6 @@
 import pygame
-
-
-screen_width = 1280
-screen_height = 720
-screen_size = (screen_width,screen_height)
-#this is the screen size which is set to be HD resolution
+import math
+from constants import *
 
 screen = pygame.display.set_caption('My very cool game') #giving the window a name
 screen = pygame.display.set_mode(screen_size) #initialise the display module/object
@@ -13,18 +9,17 @@ clock = pygame.time.Clock() #intantiating the clock object
 player_team = 'teamBarie'
 enemies_team = 'Opps'
 
-white = (255,255,255)
+#white = (255,255,255)
 
 class Background ():
 
-    def __init__ (self):
-        pass
+    def __init__ (self):  #loading background
+
+        self.sky_surface = pygame.image.load('graphics\sunsetPixel.png').convert_alpha() #importing the image
+        self.sky_surface = pygame.transform.scale(self.sky_surface, (screen_size)) #resizing to screen size        
 
     def draw(self): 
-    #loading background
-        sky_surface = pygame.image.load('graphics\sunsetPixel.png').convert_alpha() #importing the image
-        sky_surface = pygame.transform.scale(sky_surface, (screen_size)) #resizing to screen size
-        screen.blit(sky_surface, (0,0) ) # 0,0 starts at bottom right 
+        screen.blit(self.sky_surface, (0,0) ) # 0,0 starts at bottom right 
 
     def overlay (self):
         overlay = pygame.Surface(screen_size) #instantiating an overlay to soften image for main menu
@@ -80,20 +75,15 @@ class Barrie (): #the main character of my game is called barrie
         self.rect = self.barrieSprite.get_rect()
         self.rect.x, self.rect.y = x, y #x&y co-odinates for the rect
 
-        '''
-        self.shootRange = rect ()
-        '''
-
-
     def move (self):
         # if pos < screen width: #barriers
 #        self.rect.move_ip(0,speed)
 
         for event in pygame.event.get():
             key = pygame.key.get_pressed()
-            if key[pygame.K_a] == True:
+            if (key[pygame.K_a] == True) or (key[pygame.K_DOWN] == True):
                 self.rect.move_ip(-self.speed, 0)
-            if key[pygame.K_d] == True:
+            if (key[pygame.K_d] == True) or (key[pygame.K_UP] == True):
                 self.rect.move_ip(self.speed, 0)
         pygame.display.flip()
 
@@ -101,25 +91,40 @@ class Barrie (): #the main character of my game is called barrie
     def setHealth (self, health): #set health via castle upgrades
         self.health = health
 
-
     def draw (self):
         self.image = self.barrieSprite
         screen.blit (self.image, self.rect) #co ordinated defined already for x & y hence self.rect can be passed in
 
-
     def shoot(self): #created bullets using bullets class
         
-        '''
-        if within shoot range, then
-                instantaite new bullet going at whatever speed
-                add to bullet sprite group
-                
-                
-        '''
         pos = pygame.mouse.get_pos()
-        pygame.draw.line (screen, white, (self.rect.right[0],int((self.rect.bottom[1])/3) ), (pos) )
-        
 
+        x_dist = pos[0] - self.rect.right - 10
+        y_dist = self.rect.top + 35 - pos[1]
+        self.angle = math.atan2 (y_dist, x_dist)
+        print (self.angle)
+
+
+        pygame.draw.line (screen, white, (   self.rect.right - 10 ,  self.rect.top + 35      )  ,  (pos) )
+
+        pygame.display.flip ()
+        
+class Bullet (pygame.sprite.Sprite):
+
+    def __init__ (self,x,y, angle):
+        
+        self.bulletSprite = pygame.image.load('graphics\BulletSprite.png').convert_alpha() #load bullet
+        self.speed = 22
+        self.angle = angle
+
+        self.scale = 0.6
+        width = int(self.bulletSprite.get_width () * self.scale)
+        height = int(self.bulletSprite.get_height ()  * self.scale)
+        self.bulletSprite = pygame.transform.scale(self.bulletSprite, (width, height) ) #to ensure image is a correct size
+
+        self.rect = self.bulletSprite.get_rect()
+        self.rect.x, self.rect.y = x, y #x&y co-odinates for the rect
+        
 
 
 class Soldiers (pygame.sprite.Sprite): 
@@ -173,7 +178,7 @@ while running: #this while loop allows a game loop to run
     castle.draw ()
     barrie.draw ()
     barrie.move()
-
+    barrie.shoot()
 
     pos = pygame.mouse.get_pos()
     pygame.display.update()
