@@ -195,7 +195,9 @@ class Soldiers (pygame.sprite.Sprite):
     '''
 
 
-
+class Swordman (pyame.sprite.Sprite):
+    def __init__ ():
+        pass 
 
 
 # create castle (castleSprite,x,y, scale)
