@@ -150,7 +150,7 @@ class Bullet (pygame.sprite.Sprite):
 
 class Soldiers (pygame.sprite.Sprite): 
 
-    def __init__ (self, x, y, soldier_type, soldier_team, side, vetical, walk_frames, attack_frames, health, attack, defence, speed): 
+    def __init__ (self, x, y, soldier_type, soldier_team, side, walk_frames, attack_frames, health, attack, defence, speed): 
         pygame.sprite.Sprite.__init__ (self)
 
         self.soldier_type = soldier_type
@@ -193,6 +193,9 @@ class Soldiers (pygame.sprite.Sprite):
     self.frame_index = 0
     self.image = self.animation_list [self.action][self.frame_index]
     '''
+
+
+
 
 
 # create castle (castleSprite,x,y, scale)
