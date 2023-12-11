@@ -1,5 +1,6 @@
 import pygame
 import math
+import random
 from constants import *
 
 screen = pygame.display.set_caption('My very cool game') #giving the window a name
@@ -59,8 +60,6 @@ class Castle ():
     def draw (self):
         self.image = self.castleSprite
         screen.blit (self.image, self.rect) #co ordinated defined already for x & y hence self.rect can be passed in
-
-
 
 class Barrie (pygame.sprite.Sprite): #the main character of my game is called barrie
     
@@ -133,54 +132,6 @@ class Barrie (pygame.sprite.Sprite): #the main character of my game is called ba
         self.shoot()
 
 
-class Allurium(pygame.sprite.Sprite):
-    def __init__ (self, x ):
-        pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load('graphics\Allurium_bars.webp').convert_alpha() #load bullet
-        self.image = scale (self.image,1)
-
-        self.quantity = 3
-
-        self.rect = self.image.get_rect()
-        self.rect.x, self.rect.y = x, 700 #x&y co-odinates for the rect
-
-    def draw (self): #spawn allurium
-
-        screen.blit (self.image, self.rect) #co ordinated defined already for x & y hence self.rect can be passed in
-
-    def update (self):
-        self.draw()
-
-        
-class Bullet (pygame.sprite.Sprite):
-
-    def __init__ (self, x, y, angle):
-        pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load('graphics\BarrieBullet.png').convert_alpha() #load bullet
-
-        self.scale = 0.3
-        width = int(self.image.get_width () * self.scale)
-        height = int(self.image.get_height ()  * self.scale)
-        self.image = pygame.transform.scale(self.image, (width, height) ) #to ensure image is a correct size
-
-        self.speed = 8
-        self.angle = angle
-
-        #horizontal and vertical speeds using trig 
-        self.dx = math.cos(self.angle) * self.speed
-        self.dy = - (math.sin(self.angle) * self.speed)
-
-        self.rect = self.image.get_rect()
-        self.rect.x, self.rect.y = (x - width), y #x&y co-odinates for the rect
-    
-    def update (self):
-
-        if self.rect.right < 0 or self.rect.left > screen_width or self.rect.bottom < 0 or self.rect.top > screen_height:
-            self.kill ()
-        self.rect.move_ip(self.dx, 0)
-        self.rect.move_ip(0, self.dy)
-
-
 class Enemy (pygame.sprite.Sprite): 
 
     def __init__ (self, x, enemy_type, walk_frames, attack_frames, attack, defence, speed): 
@@ -228,26 +179,35 @@ class Enemy (pygame.sprite.Sprite):
         self.rect.x -= self.speed
         screen.blit(self.image,self.rect)
 
+    def drop_item(self, item_type):
+        if item_type == 'allurium':
+            allurium_drop = Allurium(self.rect.x)
+            allurium_group.add(allurium_drop)
+        elif item_type == 'coins':
+            # Implement the creation of a coins instance here
+            pass
+        # Add more conditions for other types of items
+
     def update (self):
 
         if self.health <= 0:
             self.alive = False
             self.update_action (0) #die
             print ('enemy killed')
+            # Randomly choose the type of item to drop (you can implement your logic here)
+            item_to_drop = random.choice(['allurium','allurium'])  #, 'gold'])
+            self.drop_item(item_to_drop)
             self.kill ()
         else:
             if pygame.sprite.spritecollide(self,bullet_group, True): #setting to true will automatically delete the bullet that has collided
                 print ('enemy hit')
                 self.health -= 20
-
             if self.rect.left < barrie.rect.right and not(self.rect.right < barrie.rect.left): #check if enemy has reached barrie 
                 self.update_action (1) #attack barrie
                 print ('enemy is attacking barrie')
-
             elif self.rect.left < castle.rect.right: #check if enemy has reached castle 
                 self.update_action (2) #attack base
                 print ('enemy is attacking base')
-
             elif self.alive: #only moves if alive
                 self.move()
                 
@@ -265,6 +225,54 @@ class Enemy (pygame.sprite.Sprite):
     self.frame_index = 0
     self.image = self.animation_list [self.action][self.frame_index]
     '''
+
+class Allurium(pygame.sprite.Sprite):
+    def __init__ (self, x ):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load('graphics\Allurium_bars.webp').convert_alpha() #load bullet
+        self.image = scale (self.image,1)
+
+        self.quantity = 3
+
+        self.rect = self.image.get_rect()
+        self.rect.x, self.rect.y = x, 525 #x&y co-odinates for the rect
+
+    def draw (self): #spawn allurium
+        screen.blit (self.image, self.rect) #co ordinated defined already for x & y hence self.rect can be passed in
+
+    def update (self):
+        self.draw()
+
+        
+class Bullet (pygame.sprite.Sprite):
+
+    def __init__ (self, x, y, angle):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load('graphics\BarrieBullet.png').convert_alpha() #load bullet
+
+        self.scale = 0.3
+        width = int(self.image.get_width () * self.scale)
+        height = int(self.image.get_height ()  * self.scale)
+        self.image = pygame.transform.scale(self.image, (width, height) ) #to ensure image is a correct size
+
+        self.speed = 8
+        self.angle = angle
+
+        #horizontal and vertical speeds using trig 
+        self.dx = math.cos(self.angle) * self.speed
+        self.dy = - (math.sin(self.angle) * self.speed)
+
+        self.rect = self.image.get_rect()
+        self.rect.x, self.rect.y = (x - width), y #x&y co-odinates for the rect
+    
+    def update (self):
+
+        if self.rect.right < 0 or self.rect.left > screen_width or self.rect.bottom < 0 or self.rect.top > screen_height:
+            self.kill ()
+        self.rect.move_ip(self.dx, 0)
+        self.rect.move_ip(0, self.dy)
+
+
 
 def scale (image, scale):
     width = int(image.get_width () * scale)
@@ -288,9 +296,8 @@ barrie_group.add(barrie)
 bullet_group = pygame.sprite.Group ()
 enemy_group = pygame.sprite.Group ()
 allurium_group = pygame.sprite.Group ()
-#allurium test
-allurium1 = Allurium (500)
-allurium_group.add(allurium1)
+
+
 
 #create enemy
 enemy1 = Enemy (screen_width - 100, 'swordman',10, 10,10, 10, 4)
