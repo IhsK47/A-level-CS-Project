@@ -10,8 +10,6 @@ clock = pygame.time.Clock() #intantiating the clock object
 player_team = 'teamBarie'
 enemies_team = 'Opps'
 
-#white = (255,255,255)
-
 class Background ():
 
     def __init__ (self):  #loading background
@@ -32,34 +30,29 @@ class Background ():
 background = Background ()
 
 #load images
-castleSprite = pygame.image.load('graphics\castle 3d.png').convert_alpha() #castle
+baseSprite = pygame.image.load('graphics\Base100.png').convert_alpha() #base
 barrieSprite = pygame.image.load('graphics\BarrieStickman.png').convert_alpha() #main character
 
-#creating a rect for enemy testing 
-enemySprite = pygame.Rect( screen_width-10 , 460, 100,100   )
-
-#castle class
-
-class Castle ():
-    def __init__ (self,castleSprite,x, y, scale):
-        self.health = 1000
+class Base (): #base class
+    def __init__ (self,baseSprite,x, y):
+        self.health = 400
         self.max_health = self.health
     
-        width = int(castleSprite.get_width () * scale)
-        height = int(castleSprite.get_height ()  * scale)
-        print ('castle w.h:', width, height)
+        self.baseSprite = baseSprite
+        self.scale = 0.5
+        self.image = scale (baseSprite, self.scale)
 
-        self.castleSprite = pygame.transform.scale(castleSprite, (width,height ) ) #to ensure image is a correct size
-        self.rect = self.castleSprite.get_rect()
+        self.rect = self.image.get_rect()
         self.rect.x, self.rect.y = x, y #x&y co-odinates for the rect
 
-
-    def setHealth (self, health): #set health via castle upgrades
+    def setHealth (self, health): #set health via base upgrades
         self.health = health
 
     def draw (self):
-        self.image = self.castleSprite
         screen.blit (self.image, self.rect) #co ordinated defined already for x & y hence self.rect can be passed in
+
+    def update (self):
+        self.draw ()
 
 class Barrie (pygame.sprite.Sprite): #the main character of my game is called barrie
     
@@ -91,7 +84,7 @@ class Barrie (pygame.sprite.Sprite): #the main character of my game is called ba
                 self.rect.move_ip(self.speed, 0 )
         #pygame.display.flip()
 
-    def setHealth (self, health): #set health via castle upgrades
+    def setHealth (self, health): #set health via base upgrades
         self.health = health
 
     def draw (self):
@@ -135,13 +128,13 @@ class Barrie (pygame.sprite.Sprite): #the main character of my game is called ba
 class Enemy (pygame.sprite.Sprite): 
 
     def __init__ (self, x, enemy_type, walk_frames, attack_frames, attack, defence, speed): 
-        
         pygame.sprite.Sprite.__init__ (self)
 
         if enemy_type == 'swordman':
             self.enemySprite = pygame.image.load('graphics\enemySprite.png').convert_alpha()            
             self.scale = 0.21
             self.health = 80
+            self.damage = 25
 
         self.image = self.enemySprite
         width = int(self.image.get_width () * self.scale)
@@ -149,7 +142,6 @@ class Enemy (pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.image, (width, height) ) #to ensure image is a correct size
         
         self.rect = self.image.get_rect()
-
         self.rect.left, self.rect.y = x, 525 # y pos
 
         self.attack = attack
@@ -181,7 +173,7 @@ class Enemy (pygame.sprite.Sprite):
 
     def drop_item(self, item_type):
         if item_type == 'allurium':
-            allurium_drop = Allurium(self.rect.x)
+            allurium_drop = Allurium(self.rect.x,self.rect.bottom)
             allurium_group.add(allurium_drop)
         elif item_type == 'coins':
             # Implement the creation of a coins instance here
@@ -205,7 +197,7 @@ class Enemy (pygame.sprite.Sprite):
             if self.rect.left < barrie.rect.right and not(self.rect.right < barrie.rect.left): #check if enemy has reached barrie 
                 self.update_action (1) #attack barrie
                 print ('enemy is attacking barrie')
-            elif self.rect.left < castle.rect.right: #check if enemy has reached castle 
+            elif self.rect.left < base.rect.right: #check if enemy has reached base 
                 self.update_action (2) #attack base
                 print ('enemy is attacking base')
             elif self.alive: #only moves if alive
@@ -227,15 +219,15 @@ class Enemy (pygame.sprite.Sprite):
     '''
 
 class Allurium(pygame.sprite.Sprite):
-    def __init__ (self, x ):
+    def __init__ (self, x, y ):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.image.load('graphics\Allurium_bars.webp').convert_alpha() #load bullet
-        self.image = scale (self.image,1)
+        self.image = scale (self.image,0.7)
 
         self.quantity = 3
 
         self.rect = self.image.get_rect()
-        self.rect.x, self.rect.y = x, 525 #x&y co-odinates for the rect
+        self.rect.x, self.rect.y = x, y - 2*(self.image.get_height()) #x&y co-odinates for the rect
 
     def draw (self): #spawn allurium
         screen.blit (self.image, self.rect) #co ordinated defined already for x & y hence self.rect can be passed in
@@ -282,11 +274,10 @@ def scale (image, scale):
     return image
 
 
-
-# create castle (castleSprite,x,y, scale)
-castle = Castle (castleSprite,0, 380 ,0.7 ) 
+# create base (baseSprite,x,y, scale)
+base = Base (baseSprite,0, 445 ) 
 #create main character 
-barrie = Barrie (barrieSprite, 250, 480, 0.25)
+barrie = Barrie (barrieSprite, 250, 482, 0.24)
 
 #barrie group
 barrie_group = pygame.sprite.GroupSingle()
@@ -297,37 +288,32 @@ bullet_group = pygame.sprite.Group ()
 enemy_group = pygame.sprite.Group ()
 allurium_group = pygame.sprite.Group ()
 
-
-
 #create enemy
 enemy1 = Enemy (screen_width - 100, 'swordman',10, 10,10, 10, 4)
 enemy_group.add(enemy1)
-
-
 
 running = True
 
 while running: #this while loop allows a game loop to run
 
     background.draw()
-    castle.draw ()
+    base.draw ()
 
     barrie_group.update()
-
-    allurium_group.update()
 
     bullet_group.update ()
     bullet_group.draw (screen) 
 
     enemy_group.update ()
     enemy_group.draw (screen)
+    
+    allurium_group.update()
 
     pos = pygame.mouse.get_pos()
 
     pygame.display.update()
     for event in pygame.event.get(): 
         print (event) #to allow me see when and which events are being considered
-        print (pygame.time.get_ticks ())
         if event.type == pygame.QUIT:
             running = False
 
