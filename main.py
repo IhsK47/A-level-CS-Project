@@ -1,8 +1,10 @@
 '''
 pygame.draw.circle(screen,(255,00,00), ( int(700) , int(700) ) , 10) general test circle
 
+pygame.mixer.init for sounds
+
 blit: block image transfer, blit one image onto another
-screen.blit (surface name, position)
+screen.blit (surface name, position) #the sprites top left corresponds to x,y f screen
 
 surface object instantion: thing = pygame.Surface( (w,h) )    parameters of a tuple with w,h
 colo
@@ -25,31 +27,15 @@ LL: work directory issue -----------------------
 import pygame
 import sys 
 import time
+from constants import *
 
 pygame.init()
 pygame.font.init()
 
 
-white = (255,255,255)
-black = (0,0,0)
-red = (255,0,0)
-blue = (0,0,255)
-lightBlue = (0,255,255)
-yellow = (255,255,0)
-green = (0,255,0)
-pink = (255,0,255)
-grey = (220,220,220)
-darkGrey = (140,140,140)
-#defining colours
-
-
 calibri = pygame.font.SysFont ('Calibri',40)
 #defining fonts
 
-screen_width = 1280
-screen_height = 720
-screen_size = (screen_width,screen_height)
-#this is the screen size which is set to be HD resolution
 
 screen = pygame.display.set_caption('My very cool game') #giving the window a name
 screen = pygame.display.set_mode(screen_size) #initialise the display module/object
@@ -69,13 +55,6 @@ overlay.set_alpha (120) #setting alpha for transparency
 game_state = 'mainMenu'
 
 
-
-
-
-class sprite():
-    ''
-
-
 class Button(): #defining the button class  
     #contruter method
     def __init__(self, text, x, y):
@@ -86,7 +65,7 @@ class Button(): #defining the button class
 
     def draw(self, screen):
         # Draw the button on the screen
-        pygame.draw.rect(screen, self.color, self.rect, border_radius=5)
+        pygame.draw.rect(screen, self.color, self.rect)
         font = pygame.font.Font(None, 36)  # Create a font object
         text_surface = font.render(self.text, True, self.text_color)  # Render the text
         text_rect = text_surface.get_rect(center=self.rect.center)  # Center the text on the button
@@ -141,7 +120,6 @@ def mainMenu ():
 
 def playButtonScreen():
 
-    
     pygame.display.set_caption('The Very Cool Game')
     screen.blit(sky_surface, (0,0) )
     print ('play')
@@ -150,13 +128,10 @@ def playButtonScreen():
     pygame.display.update()
 
 
-
 def settingsScreen ():
 
     pygame.display.set_caption('Settings Menu')
     print ('settings')
-
-
 
 def createFont (font,size):
     newFont = pygame.font.sysFont(font,size)
@@ -165,9 +140,6 @@ def createFont (font,size):
 def draw_text(text, font, col, x, y): #function to draw text and then blit it
   txt = font.render(text, True, col)
   screen.blit(txt, (x, y))
-
-
-
 
 playButton = Button("Play", 540, 100) #instantiation of the button
 statsButton = Button ("Stats", 540, 250)
@@ -207,8 +179,4 @@ while running: #this while loop allows a game loop to run
 
     pygame.display.flip()
     clock.tick(90) #max 90 fps to make sure program doesnt overdo 
-
-
-
-
 
