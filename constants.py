@@ -1,3 +1,6 @@
+import pygame
+pygame.init()
+
 
 white = (255,255,255)
 black = (0,0,0)
@@ -16,3 +19,9 @@ screen_width = 1280
 screen_height = 720
 screen_size = (screen_width,screen_height)
 #this is the screen size which is set to be HD resolution
+
+titleFont = ('Impact',60)
+normalFont = ('Verana',40)
+
+
+

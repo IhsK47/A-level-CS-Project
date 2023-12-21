@@ -1,30 +1,20 @@
 import pygame
-import sys 
+import math
+import random
 import time
+
+from constants import *
+from gamePlay import *
+
 
 pygame.init()
 pygame.font.init()
-
-white = (255,255,255)
-black = (0,0,0)
-red = (255,0,0)
-blue = (0,0,255)
-lightBlue = (0,255,255)
-yellow = (255,255,0)
-green = (0,255,0)
-pink = (255,0,255)
-grey = (220,220,220)
-darkGrey = (140,140,140)
-#defining colours
-
-screen_width = 1280
-screen_height = 720
-screen_size = (screen_width,screen_height)
-#this is the screen size which is set to be HD resolution
+pygame.mixer.init()
 
 screen = pygame.display.set_caption('My very cool game') #giving the window a name
 screen = pygame.display.set_mode(screen_size) #initialise the display module/object
 clock = pygame.time.Clock() #intantiating the clock object
+
 
 
 class Button(): #defining the button class  
@@ -37,7 +27,7 @@ class Button(): #defining the button class
 
     def draw(self, screen):
         # Draw the button on the screen
-        pygame.draw.rect(screen, self.color, self.rect, border_radius=5)
+        pygame.draw.rect(screen, self.color, self.rect)
         font = pygame.font.Font(None, 36)  # Create a font object
         text_surface = font.render(self.text, True, self.text_color)  # Render the text
         text_rect = text_surface.get_rect(center=self.rect.center)  # Center the text on the button
@@ -49,30 +39,83 @@ class Button(): #defining the button class
             return True
 
 
-def background(): 
-    #loading background
-    sky_surface = pygame.image.load('graphics\sunsetPixel.png').convert_alpha() #importing the image
-    sky_surface = pygame.transform.scale(sky_surface, (screen_size)) #resizing to screen size
-    screen.blit(sky_surface, (0,0) )
+class MainMenu (pygame.sprite.Sprite):
+    
+    def __init__ (self):
+        pygame.sprite.Sprite.__init__(self)
 
-def overlay ():
-    overlay = pygame.Surface(screen_size) #instantiating an overlay to soften image for main menu
-    overlay.fill((192,192,192)) #grey rgb
-    overlay.set_alpha (120) #setting alpha for transparency
-    screen.blit(overlay, (0,0) )
+        self.x = 540
+        self.playButton = Button("Play", self.x, 100) #instantiation of the button
+        self.statsButton = Button ("Stats", self.x, 250)
+        self.settingsButton = Button ("Settings", self.x, 400)
+        self.quitButton = Button ("Quit", self.x, 550)
+
+    def draw (self):
+        self.playButton.draw(screen)  # Draw the button on the screen
+        self.statsButton.draw(screen)
+        self.settingsButton.draw(screen)
+        self.quitButton.draw(screen)
+
+    def update (self):
+        #background.with_overlay()
+        self.draw()
+        pos = pygame.mouse.get_pos() #get mouse position
+        for event in pygame.event.get(): 
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1: # Check if the left mouse button was clicked 
+                if self.playButton.is_clicked(pos):
+                    game.endless_mode ()
+                if self.quitButton.is_clicked(pos):
+                    pygame.quit()
+                elif self.settingsButton.is_clicked(pos):
+                    settingsScreen ()
+                elif self.statsButton.is_clicked(pos):
+                    pass
+                    # statsScreen
+                self.kill()
 
 
+def draw_text(text, text_type, col, x, y): #function to draw text and then blit it
+  
+    given_font = pygame.font.SysFont( text_type[0],text_type[1]  ) #text_type will always be a tuple and SysFont required seperately given arguements
+    txt = given_font.render(text, True, col)
+    screen.blit( txt, (x, y) )
 
 
+#create base (baseSprite,x,y)
+base = Base (baseSprite,-30, 445) 
+#create main character 
+barrie = Barrie (barrieSprite, 250, 482, 0.24)
 
-def main ():
+#instantiate other relevant classes
+background = Background ()
+stats = Stats ()
+game = Game () 
+sound = Sounds ()
+menu = MainMenu ()
+
+#barrie group
+barrie_group = pygame.sprite.GroupSingle()
+barrie_group.add(barrie)
+
+#create groups 
+bullet_group = pygame.sprite.Group ()
+enemy_group = pygame.sprite.Group ()
+allurium_group = pygame.sprite.Group ()
 
 
+running = True
+while running: #this while loop allows a game loop to run
+
+    menu.update()
+
+    pos = pygame.mouse.get_pos()
+
+    pygame.display.update()
     for event in pygame.event.get(): 
+        print (event) #to allow me see when and which events are being considered
         if event.type == pygame.QUIT:
             running = False
-    
-    if __display__ == 'menu':
-        mainMenu()
 
-main()
+    clock.tick(60)
+
+
