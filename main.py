@@ -1,12 +1,9 @@
 '''
-pygame.draw.circle(screen,(255,00,00), ( int(700) , int(700) ) , 10) general test circle
-
-pygame.mixer.init for sounds
 
 blit: block image transfer, blit one image onto another
 screen.blit (surface name, position) #the sprites top left corresponds to x,y f screen
 
-surface object instantion: thing = pygame.Surface( (w,h) )    parameters of a tuple with w,h
+surface object instantion: thing = pygame.Surface( (w,h) )   parameters of a tuple with w,h
 colo
 def rect(surface: Surface, color: ColorValue, rect: RectValue, width: int=0, border_radius: int=-1, border_top_left_radius: int=-1, 
 border_top_right_radius: int=-1, border_bottom_left_radius: int=-1, border_bottom_right_radius: int=-1
@@ -14,15 +11,8 @@ border_top_right_radius: int=-1, border_bottom_left_radius: int=-1, border_botto
 in middle of sprite
 https://www.youtube.com/watch?v=2iyx8_elcYg&list=PLWgEGaPlUGPdaoAuY1Iv1xQrqYLWrmTHZ&index=4&t=340s&ab_channel=CodingWithRuss
 
-
-LL: work directory issue -----------------------
-
 '''
 #hint: save changes locally before saving to github ;)
-
-
-#what are we up to: loop is working, prints are functioning but the actual pygame stuff wont happen, #
-## but if i run playscren it works outside loop
 
 import pygame
 import sys 
@@ -31,10 +21,6 @@ from constants import *
 
 pygame.init()
 pygame.font.init()
-
-
-calibri = pygame.font.SysFont ('Calibri',40)
-#defining fonts
 
 
 screen = pygame.display.set_caption('My very cool game') #giving the window a name
@@ -75,8 +61,6 @@ class Button(): #defining the button class
         # Check if a given point (pos) is inside the button's rectangle
         if self.rect.collidepoint(pos) and pygame.mouse.get_pressed()[0]:
             return True
-        
-        #return self.rect.collidepoint(pos)
 
 
 def main ():
@@ -110,8 +94,7 @@ def mainMenu ():
             # Check if the left mouse button was clicked
  #           next 
             if playButton.is_clicked(pos):
-                play()
-                #playButtonScreen ()
+                playButtonScreen ()
             if quitButton.is_clicked(pos):
                 return False
             elif settingsButton.is_clicked(pos):
@@ -129,7 +112,6 @@ def playButtonScreen():
 
 
 def settingsScreen ():
-
     pygame.display.set_caption('Settings Menu')
     print ('settings')
 
@@ -149,7 +131,6 @@ quitButton = Button ("Quit", 540, 550)
 main()
 running = True
 while running: #this while loop allows a game loop to run
-
 
     pos = pygame.mouse.get_pos()
 
@@ -174,8 +155,6 @@ while running: #this while loop allows a game loop to run
             elif settingsButton.is_clicked(pos):
                 settingsScreen ()
 
-    #screen.blit(sky_surface, (0,0) )
-    #screen.blit(overlay, (0,0) )
 
     pygame.display.flip()
     clock.tick(90) #max 90 fps to make sure program doesnt overdo 

@@ -16,7 +16,6 @@ screen = pygame.display.set_mode(screen_size) #initialise the display module/obj
 clock = pygame.time.Clock() #intantiating the clock object
 
 
-
 class Button(): #defining the button class  
     #contruter method
     def __init__(self, text, x, y):
@@ -38,40 +37,60 @@ class Button(): #defining the button class
         if self.rect.collidepoint(pos) and pygame.mouse.get_pressed()[0]:
             return True
 
-
-class MainMenu (pygame.sprite.Sprite):
-    
-    def __init__ (self):
+class MainMenu(pygame.sprite.Sprite):
+    def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-
         self.x = 540
         self.playButton = Button("Play", self.x, 100) #instantiation of the button
-        self.statsButton = Button ("Stats", self.x, 250)
-        self.settingsButton = Button ("Settings", self.x, 400)
-        self.quitButton = Button ("Quit", self.x, 550)
+        self.statsButton = Button("Stats", self.x, 250)
+        self.settingsButton = Button("Settings", self.x, 400)
+        self.quitButton = Button("Quit", self.x, 550)
 
-    def draw (self):
-        self.playButton.draw(screen)  # Draw the button on the screen
+        self.play_clicked = False
+        self.stats_clicked = False
+        self.settings_clicked = False
+        self.quit_clicked = False
+
+    def draw(self):
+        background.with_overlay() 
+        self.playButton.draw(screen) # Draw the button on the screen
         self.statsButton.draw(screen)
         self.settingsButton.draw(screen)
         self.quitButton.draw(screen)
 
-    def update (self):
-        #background.with_overlay()
+    def update(self):
         self.draw()
-        pos = pygame.mouse.get_pos() #get mouse position
-        for event in pygame.event.get(): 
-            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1: # Check if the left mouse button was clicked 
-                if self.playButton.is_clicked(pos):
-                    game.endless_mode ()
-                if self.quitButton.is_clicked(pos):
-                    pygame.quit()
-                elif self.settingsButton.is_clicked(pos):
-                    settingsScreen ()
-                elif self.statsButton.is_clicked(pos):
-                    pass
-                    # statsScreen
+        self.pos = pygame.mouse.get_pos() #get mouse position
+
+        for event in pygame.event.get():
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1: # Check if the left mouse button was clicked
+                if self.playButton.is_clicked(self.pos):
+                    self.play_clicked = True
+                elif self.quitButton.is_clicked(self.pos):
+                    self.quit_clicked = True
+                elif self.settingsButton.is_clicked(self.pos):
+                    self.settings_clicked = True
+                elif self.statsButton.is_clicked(self.pos):
+                    self.stats_clicked = True
+
+                pygame.display.update()
                 self.kill()
+
+    def is_play_clicked(self):
+        return self.play_clicked
+    def is_quit_clicked(self):
+        return self.quit_clicked
+    def is_settings_clicked(self):
+        return self.settings_clicked
+    def is_stats_clicked(self):
+        return self.stats_clicked
+
+
+def settingsScreen ():
+    background.with_overlay()
+    pygame.display.set_caption('Settings Menu')
+    print ('settings')
+    pygame.display.update()
 
 
 def draw_text(text, text_type, col, x, y): #function to draw text and then blit it
@@ -81,32 +100,48 @@ def draw_text(text, text_type, col, x, y): #function to draw text and then blit 
     screen.blit( txt, (x, y) )
 
 
-#create base (baseSprite,x,y)
-base = Base (baseSprite,-30, 445) 
-#create main character 
-barrie = Barrie (barrieSprite, 250, 482, 0.24)
-
-#instantiate other relevant classes
-background = Background ()
-stats = Stats ()
-game = Game () 
-sound = Sounds ()
+#instantiate 
 menu = MainMenu ()
 
-#barrie group
-barrie_group = pygame.sprite.GroupSingle()
-barrie_group.add(barrie)
-
-#create groups 
-bullet_group = pygame.sprite.Group ()
-enemy_group = pygame.sprite.Group ()
-allurium_group = pygame.sprite.Group ()
-
-
 running = True
-while running: #this while loop allows a game loop to run
+active_screen = "main_menu"
 
-    menu.update()
+while running:
+    pos = pygame.mouse.get_pos()
+
+    for event in pygame.event.get():
+        print(event)
+        if event.type == pygame.QUIT:
+            print('x was clicked, I think')
+            running = False
+
+    if active_screen == "main_menu":
+        menu.update()
+
+        if menu.is_play_clicked(): #settings the active_screen variable respectively
+            active_screen = "endless_mode"
+            print ('play')
+        elif menu.is_quit_clicked():
+            print('quitv2')
+            exit()
+        elif menu.is_settings_clicked():
+            active_screen = "settings"
+        elif menu.is_stats_clicked():
+            active_screen = "stats"
+
+    elif active_screen == "settings":
+        settingsScreen()
+
+    elif active_screen == 'stats':
+        #statsScreen()
+        pass
+
+    elif active_screen == "endless_mode":
+        game.endless_mode()
+
+    pygame.display.update()
+    clock.tick(60)
+
 
     pos = pygame.mouse.get_pos()
 
@@ -114,8 +149,7 @@ while running: #this while loop allows a game loop to run
     for event in pygame.event.get(): 
         print (event) #to allow me see when and which events are being considered
         if event.type == pygame.QUIT:
+            print ('x was clicked, i think')
             running = False
-
-    clock.tick(60)
 
 

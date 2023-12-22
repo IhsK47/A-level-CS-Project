@@ -2,12 +2,12 @@ import pygame
 import math
 import random
 import time
+
 from constants import *
 
 pygame.init()
 pygame.font.init()
 pygame.mixer.init()
-
 
 screen = pygame.display.set_caption('My very cool game') #giving the window a name
 screen = pygame.display.set_mode(screen_size) #initialise the display module/object
@@ -36,20 +36,15 @@ class Background ():
         self.draw()
         self.overlay()
 
-
-#load images
-baseSprite = pygame.image.load('graphics\Base100.png').convert_alpha() #base
-barrieSprite = pygame.image.load('graphics\BarrieStickman.png').convert_alpha() #main character
-
 class Base (): #base class
-    def __init__ (self,baseSprite,x, y):
+    def __init__ (self,x, y):
         self.health = 400
         self.max_health = self.health
         self.alive = True
     
-        self.baseSprite = baseSprite
+        self.baseSprite = pygame.image.load('graphics\Base100.png').convert_alpha() #base
         self.scale = 0.5
-        self.image = scale (baseSprite, self.scale)
+        self.image = scale (self.baseSprite, self.scale)
 
         self.rect = self.image.get_rect()
         self.rect.x, self.rect.y = x, y #x&y co-odinates for the rect
@@ -74,13 +69,12 @@ class Base (): #base class
         self.draw ()
         self.healthBar.update(self.health, self.rect.x+40, self.rect.y - 70 )
         
-
 class Barrie (pygame.sprite.Sprite): #the main character of my game is called barrie
     
-    def __init__ (self,barrieSprite,x, y, scale):
+    def __init__ (self,x, y):
         
         pygame.sprite.Sprite.__init__ (self)
-        self.barrieSprite = barrieSprite
+        self.image = pygame.image.load('graphics\BarrieStickman.png').convert_alpha() #main character
         self.health = 200
         self.max_health = self.health
         self.speed = 13
@@ -88,11 +82,10 @@ class Barrie (pygame.sprite.Sprite): #the main character of my game is called ba
         self.alive = True
         self.allurium = 0
 
-        width = int(barrieSprite.get_width () * scale)
-        height = int(barrieSprite.get_height ()  * scale)
+        self.scale = 0.24
+        self.image = scale (self.image, self.scale)
 
-        self.barrieSprite = pygame.transform.scale(barrieSprite, (width, height) ) #to ensure image is a correct size
-        self.rect = self.barrieSprite.get_rect()
+        self.rect = self.image.get_rect()
         self.rect.x, self.rect.y = x, y #x&y co-odinates for the rect
 
         self.healthBar = HealthBar (x, y - 10, self.rect.width, 10 , self.max_health, player_team)
@@ -111,7 +104,7 @@ class Barrie (pygame.sprite.Sprite): #the main character of my game is called ba
         self.health = health
 
     def draw (self):
-        self.image = self.barrieSprite
+
         pygame.draw.rect (screen, white, self.rect, 1) ######################################### testinf purposes
         screen.blit (self.image, self.rect) #co ordinated defined already for x & y hence self.rect can be passed in
         self.healthBar.update(self.health, self.rect.x, self.rect.y - 10 )
@@ -130,7 +123,7 @@ class Barrie (pygame.sprite.Sprite): #the main character of my game is called ba
             self.fired = True
             bullet = Bullet (bulletStart_x,bulletStart_y, self.angle)
             bullet_group.add(bullet)
-        if pygame.mouse.get_pressed()[0] == False:
+        if pygame.mouse.get_pressed()[0] == False: #prevents bullets to be fired one click at a time by resetting fired unless mouse is clicked again
             self.fired = False
 
         pygame.draw.line (screen, white, (bulletStart_x, bulletStart_y)  ,  (pos) ) #############################
@@ -169,9 +162,8 @@ class Enemy (pygame.sprite.Sprite):
             
         self.speed = 3
         self.image = self.enemySprite
-        width = int(self.image.get_width () * self.scale)
-        height = int(self.image.get_height ()  * self.scale)
-        self.image = pygame.transform.scale(self.image, (width, height) ) #to ensure image is a correct size
+        
+        self.image = scale (self.image, self.scale)
         
         self.rect = self.image.get_rect()
         self.rect.left, self.rect.y = x, 530 # y pos
@@ -235,19 +227,19 @@ class Enemy (pygame.sprite.Sprite):
                 self.health -= 20
                 stats.totalDamageDealt += 20
                 
-            if self.rect.left < barrie.rect.right and not(self.rect.right < barrie.rect.left): #check if enemy has reached barrie 
+            if self.rect.left < game.barrie.rect.right and not(self.rect.right < game.barrie.rect.left): #check if enemy has reached barrie 
                 self.update_action (1) #attack barrie
 
-            elif self.rect.left < base.rect.right: #check if enemy has reached base 
+            elif self.rect.left < game.base.rect.right: #check if enemy has reached base 
                 self.update_action (2) #attack base
 
             elif self.alive: #only moves if alive
                 self.move()
                 
         if self.current_action == 1:
-            self.attack (barrie)
+            self.attack (game.barrie)
         elif self.current_action == 2:
-            self.attack(base)
+            self.attack(game.base)
 
     def update_action (self, new_action): #check if the new action is different to the previous one
         if new_action != self.current_action:
@@ -284,7 +276,6 @@ class HealthBar ():
             pygame.draw.rect(screen, self.bg_colour, (self.x, self.y, self.width, self.height)) #first draws bg
             pygame.draw.rect(screen, self.health_colour, (self.x, self.y, bar_width, self.height)) #draws actual health over
 
-
 class Allurium(pygame.sprite.Sprite):
     def __init__ (self, x, y ):
         pygame.sprite.Sprite.__init__(self)
@@ -302,7 +293,6 @@ class Allurium(pygame.sprite.Sprite):
     def update (self):
         self.draw()
 
-        
 class Bullet (pygame.sprite.Sprite):
     
     def __init__ (self, x, y, angle):
@@ -310,9 +300,7 @@ class Bullet (pygame.sprite.Sprite):
         self.image = pygame.image.load('graphics\BarrieBullet.png').convert_alpha() #load bullet
 
         self.scale = 0.3
-        width = int(self.image.get_width () * self.scale)
-        height = int(self.image.get_height ()  * self.scale)
-        self.image = pygame.transform.scale(self.image, (width, height) ) #to ensure image is a correct size
+        self.image = scale (self.image, self.scale)
 
         self.speed = 10
         self.angle = angle
@@ -322,7 +310,7 @@ class Bullet (pygame.sprite.Sprite):
         self.dy = - (math.sin(self.angle) * self.speed)
 
         self.rect = self.image.get_rect()
-        self.rect.x, self.rect.y = (x - width), y #x&y co-odinates for the rect
+        self.rect.x, self.rect.y = (x - self.rect.width), y #x&y co-odinates for the rect
     
     def update (self):
 
@@ -332,45 +320,21 @@ class Bullet (pygame.sprite.Sprite):
         self.rect.move_ip(0, self.dy)
 
 
-class Stats ():
-    def __init__ (self):
-        self.score = 0
-        self.currentScore = 0
-        self.highScore = 0
-        self.enemiesSpawned = 0
-        self.enemiesKilled = 0
-        self.totalEnemiesKilled = 0
-        self.roundsPlayed = 0
-        self.totalPlayingTime = 0
-        self.totalAllies = 0
-        self.totalDamageDealt = 0
-    
-    def round_end(self):
-        if self.score > self.highScore:
-            self.highScore = self.currentScore
-        self.currentScore = 0
-        self.totalEnemiesKilled += self.enemiesKilled
-        self.enemiesKilled = 0
-        
-
-class Sounds ():
-    def __init__ (self):
-
-        self.defeatMusic = pygame.mixer.Sound('audio/Afraid Humming.mp3')
-       
-        #self.victoryMusic = pygame.mixer.music.load('Audio/        .mp3')
-
 class Game():
 
     def __init__(self):
         self.enemy_spawn_interval = [1300, 1000, 1100, 700, 1500, 900] #index 0-4
         self.enemy_spawn_timer = pygame.time.get_ticks()  # Initialize the timer
 
-    
+        #create base (baseSprite,x,y)
+        self.base = Base (-30, 445) 
+        #create main character 
+        self.barrie = Barrie (250, 482)
+
     def update_loop (self):
         background.draw()
         
-        base.update ()
+        self.base.update ()
         barrie_group.update()
 
         bullet_group.update ()
@@ -380,14 +344,16 @@ class Game():
         enemy_group.draw (screen)
         
         allurium_group.update()
-
     
     def endless_mode(self):
-        current_time = pygame.time.get_ticks()
 
+        pygame.display.set_caption('Endless Mode.')
+        pygame.display.set_caption('Endless Mode..')
+        pygame.display.set_caption('Endless Mode...')
+        current_time = pygame.time.get_ticks()
         self.update_loop ()
 
-        if barrie.alive and base.alive:
+        if self.barrie.alive and self.base.alive:
 
             if stats.score < 1000: #for 20 kills, 1.3s // total = 20
                 spawn = 0
@@ -417,6 +383,34 @@ class Game():
             stats.round_end()
 
 
+class Stats ():
+    def __init__ (self):
+        self.score = 0
+        self.currentScore = 0
+        self.highScore = 0
+        self.enemiesSpawned = 0
+        self.enemiesKilled = 0
+        self.totalEnemiesKilled = 0
+        self.roundsPlayed = 0
+        self.totalPlayingTime = 0
+        self.totalAllies = 0
+        self.totalDamageDealt = 0
+    
+    def round_end(self):
+        if self.score > self.highScore:
+            self.highScore = self.currentScore
+        self.currentScore = 0
+        self.totalEnemiesKilled += self.enemiesKilled
+        self.enemiesKilled = 0
+
+class Sounds ():
+    def __init__ (self):
+
+        self.defeatMusic = pygame.mixer.Sound('audio/Afraid Humming.mp3')
+       
+        #self.victoryMusic = pygame.mixer.music.load('Audio/        .mp3')
+
+
 def victory_Screen():
     #sound.victoryMusic.play()
 
@@ -432,14 +426,33 @@ def defeat_Screen(kills,score):
     draw_text (f'kills = {kills}', normalFont, black , screen_width / 2 - 65 , 300 )
     draw_text (f'score = {score}', normalFont, black , screen_width / 2 - 65  , 350 )
 
+def draw_text(text, text_type, col, x, y): #function to draw text and then blit it
+  
+    given_font = pygame.font.SysFont( text_type[0],text_type[1]  ) #text_type will always be a tuple and SysFont required seperately given arguements
+    txt = given_font.render(text, True, col)
+    screen.blit( txt, (x, y) )
+
 def scale (image, scale):
+
     width = int(image.get_width () * scale)
     height = int(image.get_height () * scale)
-
     image = pygame.transform.scale(image, (width, height)) #to ensure image is a correct size
     return image
 
 
 
+#instantiate other relevant classes
+background = Background ()
+stats = Stats ()
+game = Game () 
+sound = Sounds ()
 
 
+#barrie group
+barrie_group = pygame.sprite.GroupSingle()
+barrie_group.add(game.barrie)
+
+#create groups 
+bullet_group = pygame.sprite.Group ()
+enemy_group = pygame.sprite.Group ()
+allurium_group = pygame.sprite.Group ()
