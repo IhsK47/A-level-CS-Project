@@ -13,7 +13,7 @@ screen = pygame.display.set_caption('My very cool game') #giving the window a na
 screen = pygame.display.set_mode(screen_size) #initialise the display module/object
 clock = pygame.time.Clock() #intantiating the clock object
 
-player_team = 'teamBarie'
+player_team = 'teamBarrie'
 enemies_team = 'Opps'
 
 class Background ():
@@ -91,14 +91,13 @@ class Barrie (pygame.sprite.Sprite): #the main character of my game is called ba
         self.healthBar = HealthBar (x, y - 10, self.rect.width, 10 , self.max_health, player_team)
 
     def move (self):
-
+        
         for event in pygame.event.get():
             key = pygame.key.get_pressed()
-            if (self.rect.left > 0)  and ( (key[pygame.K_a] == True) or (key[pygame.K_DOWN] == True) ) :
+            if (self.rect.left > 0)  and ( (key[pygame.K_a] == True) or (key[pygame.K_LEFT] == True) ) :
                 self.rect.move_ip(-self.speed, 0 )
-            if (self.rect.right < screen_width)  and  (key[pygame.K_d] == True) or (key[pygame.K_UP] == True):
+            if (self.rect.right < screen_width) and (key[pygame.K_d] == True) or (key[pygame.K_RIGHT] == True):
                 self.rect.move_ip(self.speed, 0 )
-        #pygame.display.flip()
 
     def setMaxHealth (self, health): #set health via base upgrades
         self.health = health
