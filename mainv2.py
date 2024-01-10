@@ -6,15 +6,13 @@ import time
 from constants import *
 from gamePlay import *
 
-
 pygame.init()
 pygame.font.init()
 pygame.mixer.init()
 
-screen = pygame.display.set_caption('My very cool game') #giving the window a name
+screen = pygame.display.set_caption("Barries Gambit") #giving the window a name
 screen = pygame.display.set_mode(screen_size) #initialise the display module/object
 clock = pygame.time.Clock() #intantiating the clock object
-
 
 class Button(): #defining the button class  
     #contruter method
@@ -92,13 +90,17 @@ def settingsScreen ():
     print ('settings')
     pygame.display.update()
 
+def statsScreen ():
+    background.with_overlay()
+    pygame.display.set_caption('Stats Menu')
+    print ('stats')
+    pygame.display.update()
 
 def draw_text(text, text_type, col, x, y): #function to draw text and then blit it
   
     given_font = pygame.font.SysFont( text_type[0],text_type[1]  ) #text_type will always be a tuple and SysFont required seperately given arguements
     txt = given_font.render(text, True, col)
     screen.blit( txt, (x, y) )
-
 
 #instantiate 
 menu = MainMenu ()
@@ -122,7 +124,7 @@ while running:
             active_screen = "endless_mode"
             print ('play')
         elif menu.is_quit_clicked():
-            print('quitv2')
+            print('quit via button')
             exit()
         elif menu.is_settings_clicked():
             active_screen = "settings"
@@ -133,15 +135,13 @@ while running:
         settingsScreen()
 
     elif active_screen == 'stats':
-        #statsScreen()
-        pass
-
+        statsScreen()
+        
     elif active_screen == "endless_mode":
         game.endless_mode()
 
     pygame.display.update()
     clock.tick(60)
-
 
     pos = pygame.mouse.get_pos()
 
@@ -153,3 +153,4 @@ while running:
             running = False
 
 
+##########################################################################################################################

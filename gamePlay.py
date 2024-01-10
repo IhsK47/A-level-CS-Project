@@ -9,7 +9,7 @@ pygame.init()
 pygame.font.init()
 pygame.mixer.init()
 
-screen = pygame.display.set_caption('My very cool game') #giving the window a name
+screen = pygame.display.set_caption('Barries Gambit') #giving the window a name
 screen = pygame.display.set_mode(screen_size) #initialise the display module/object
 clock = pygame.time.Clock() #intantiating the clock object
 
@@ -103,15 +103,12 @@ class Barrie (pygame.sprite.Sprite): #the main character of my game is called ba
         self.health = health
 
     def draw (self):
-
-        pygame.draw.rect (screen, white, self.rect, 1) ######################################### testinf purposes
-        screen.blit (self.image, self.rect) #co ordinated defined already for x & y hence self.rect can be passed in
         self.healthBar.update(self.health, self.rect.x, self.rect.y - 10 )
+        screen.blit (self.image, self.rect) #co ordinated defined already for x & y hence self.rect can be passed in
 
     def shoot(self): #created bullets using bullets class
         
         pos = pygame.mouse.get_pos()
-
         bulletStart_x = self.rect.right - 5
         bulletStart_y = self.rect.top + 25
         x_dist = pos[0] - bulletStart_x
@@ -125,18 +122,17 @@ class Barrie (pygame.sprite.Sprite): #the main character of my game is called ba
         if pygame.mouse.get_pressed()[0] == False: #prevents bullets to be fired one click at a time by resetting fired unless mouse is clicked again
             self.fired = False
 
-        pygame.draw.line (screen, white, (bulletStart_x, bulletStart_y)  ,  (pos) ) #############################
-
     def allurium_pickUp(self):
         for allurium_sprite in pygame.sprite.spritecollide(self,allurium_group, True): #setting to true will automatically delete the allurium that has collided
             print ('allurium hit', self.allurium)
             self.allurium += allurium_sprite.quantity
 
     def damaged (self,damage):
+
+        if self.health < 0:
+            self.health = 0        
         if self.health > 0: 
             self.health -= damage
-        if self.health < 0:
-            self.health = 0
         if self.health == 0:
             self.alive = False
 
@@ -318,7 +314,6 @@ class Bullet (pygame.sprite.Sprite):
         self.rect.move_ip(self.dx, 0)
         self.rect.move_ip(0, self.dy)
 
-
 class Game():
 
     def __init__(self):
@@ -354,6 +349,8 @@ class Game():
 
         if self.barrie.alive and self.base.alive:
 
+            draw_text (f'score = {stats.currentScore}', (normalFont[0],60), black , screen_width / 2 - 65  , 80 )
+
             if stats.score < 1000: #for 20 kills, 1.3s // total = 20
                 spawn = 0
             elif stats.score < 1500: #for 10 kills, 1s // total = 30
@@ -374,13 +371,11 @@ class Game():
                 enemy1 = Enemy(screen_width - 100, 'swordman')
                 enemy_group.add(enemy1)
                 self.enemy_spawn_timer = current_time  # Reset the timer
-        else: 
-            
+        else:
             background.overlay()
             defeat_Screen(stats.enemiesKilled,stats.currentScore)
-            time.sleep(3) #####################################################################
+            time.sleep(4) ################################################################
             stats.round_end()
-
 
 class Stats ():
     def __init__ (self):
@@ -408,7 +403,6 @@ class Sounds ():
         self.defeatMusic = pygame.mixer.Sound('audio/Afraid Humming.mp3')
        
         #self.victoryMusic = pygame.mixer.music.load('Audio/        .mp3')
-
 
 def victory_Screen():
     #sound.victoryMusic.play()
@@ -439,13 +433,11 @@ def scale (image, scale):
     return image
 
 
-
 #instantiate other relevant classes
 background = Background ()
 stats = Stats ()
 game = Game () 
 sound = Sounds ()
-
 
 #barrie group
 barrie_group = pygame.sprite.GroupSingle()
