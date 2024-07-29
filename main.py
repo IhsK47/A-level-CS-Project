@@ -1,5 +1,8 @@
 '''
+please note this is not the correct file to use, please use mainv2.py
+'''
 
+'''
 blit: block image transfer, blit one image onto another
 screen.blit (surface name, position) #the sprites top left corresponds to x,y f screen
 
